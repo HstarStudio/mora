@@ -3,15 +3,15 @@ package documents
 import (
 	"encoding/json"
 	"errors"
+	"github.com/compose/mejson"
 	"github.com/emicklei/go-restful"
-	. "github.com/emicklei/mora/api/response"
-	"github.com/emicklei/mora/session"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/compose/mejson"
 	"log"
 	"net/http"
 	"net/url"
+	. "response"
+	"session"
 	"strconv"
 	"strings"
 )
@@ -37,6 +37,7 @@ func (d *Resource) AliasListHandler(req *restful.Request, resp *restful.Response
 func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Response) {
 	// filter invalids
 	alias := getParam("alias", req)
+	println(alias)
 	if alias == "" || strings.Index(alias, ".") != -1 {
 		resp.WriteHeader(http.StatusBadRequest)
 		return
@@ -79,6 +80,7 @@ func (d *Resource) DatabaseCollectionsHandler(req *restful.Request, resp *restfu
 
 	// Database request parameter
 	dbname := getParam("database", req)
+	println(dbname)
 
 	// Get collections from database
 	collections, err := session.DB(dbname).CollectionNames()
@@ -144,6 +146,7 @@ func (d *Resource) CollectionUpdateHandler(req *restful.Request, resp *restful.R
 		WriteError(err, resp)
 		return
 	}
+	//isStrict := getParam("strict", req)
 
 	// Insert if request method is POST or no selector otherwise update
 	if req.Request.Method == "POST" {

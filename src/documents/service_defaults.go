@@ -2,7 +2,7 @@ package documents
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/emicklei/mora/session"
+	"session"
 )
 
 // Creates and returns documents webservice

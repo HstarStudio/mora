@@ -2,7 +2,7 @@ package statistics
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/emicklei/mora/session"
+	"session"
 )
 
 // Creates and adds Statistics Resource to container

@@ -3,9 +3,9 @@ package statistics
 import (
 	"fmt"
 	"github.com/emicklei/go-restful"
-	. "github.com/emicklei/mora/api/response"
-	"github.com/emicklei/mora/session"
 	"gopkg.in/mgo.v2/bson"
+	. "response"
+	"session"
 )
 
 // Statistics Resource

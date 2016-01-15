@@ -1,20 +1,20 @@
 package main
 
 import (
-	"os"
-	"os/exec"
 	"flag"
-	"strings"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
+	"documents"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/emicklei/mora/api/documents"
-	"github.com/emicklei/mora/api/statistics"
-	"github.com/emicklei/mora/session"
 	"github.com/magiconair/properties"
+	"session"
+	"statistics"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	//Load configuration file from exec file name 
+	//Load configuration file from exec file name
 	filePath, _ := exec.LookPath(os.Args[0])
 	fileName := filepath.Base(filePath)
 	idx := strings.LastIndex(fileName, ".")
