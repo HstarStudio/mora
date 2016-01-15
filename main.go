@@ -1,7 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/exec"
 	"flag"
+	"strings"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -23,6 +26,13 @@ var (
 )
 
 func main() {
+	//Load configuration file from exec file name 
+	filePath, _ := exec.LookPath(os.Args[0])
+	fileName := filepath.Base(filePath)
+	idx := strings.LastIndex(fileName, ".")
+	fileName = fileName[0:idx]
+	flag.Set("config", fileName + ".properties")
+
 	flag.Parse()
 
 	// Load configurations from a file
