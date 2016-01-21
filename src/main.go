@@ -25,8 +25,9 @@ var (
 	MoraIcon    string
 )
 
+// 程序入口点
 func main() {
-	//Load configuration file from exec file name
+	//通过二进制文件名，加载同名配置文件
 	filePath, _ := exec.LookPath(os.Args[0])
 	fileName := filepath.Base(filePath)
 	idx := strings.LastIndex(fileName, ".")
@@ -60,17 +61,18 @@ func main() {
 	// no need to access body more than once
 	restful.SetCacheReadEntity(false)
 
-	// API Cross-origin requests
+	// 获取配置文件中是否允许cors的变量值
 	apiCors := props.GetBool("http.server.cors", false)
 
-	// Documents API
+	// 注册API（Documents API）
 	documents.Register(sessMng, restful.DefaultContainer, apiCors)
 
-	// Statistics API
+	// 如果启用了统计类API（Statistics API）
 	if ok := props.GetBool("mora.statistics.enable", false); ok {
 		statistics.Register(sessMng, restful.DefaultContainer)
 	}
 
+	// 要监听的服务器IP：端口
 	addr := props.MustGet("http.server.host") + ":" + props.MustGet("http.server.port")
 	basePath := "http://" + addr
 
@@ -100,6 +102,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, SwaggerPath, http.StatusMovedPermanently)
 }
 
+//对icon的请求
 func icon(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, MoraIcon, http.StatusMovedPermanently)
 }

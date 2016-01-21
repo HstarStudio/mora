@@ -39,11 +39,13 @@ func (d Resource) WebService() *restful.WebService {
 	ws.Consumes("*/*")
 	ws.Produces(restful.MIME_JSON)
 
+	//定义参数变量
 	alias := ws.PathParameter("alias", "Name of the MongoDB instance as specified in the configuration")
 	database := ws.PathParameter("database", "Database name from the MongoDB instance")
 	collection := ws.PathParameter("collection", "Collection name from the database")
 	id := ws.PathParameter(ParamID, "Storage identifier of the document")
 
+  // 用于拼接到URI上的满足格式的参数变量
 	paramID := "{" + ParamID + "}"
 
 	ws.Route(ws.GET("/").To(d.AliasListHandler).
