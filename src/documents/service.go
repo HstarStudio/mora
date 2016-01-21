@@ -45,9 +45,10 @@ func (d Resource) WebService() *restful.WebService {
 	collection := ws.PathParameter("collection", "Collection name from the database")
 	id := ws.PathParameter(ParamID, "Storage identifier of the document")
 
-  // 用于拼接到URI上的满足格式的参数变量
+	// 用于拼接到URI上的满足格式的参数变量
 	paramID := "{" + ParamID + "}"
 
+	// 请求根路径，返回从配置文件中读取的Alias（mongod.xxx.host中的xxx）
 	ws.Route(ws.GET("/").To(d.AliasListHandler).
 		Doc("Return all Mongo DB aliases from the configuration").
 		Operation("AliasListHandler"))
@@ -59,6 +60,7 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl http://127.0.0.1:8181/docs/
 	//
+	// 请求/xxx，就通过该配置连接mongo server，返回mongo server中的所有数据库
 	ws.Route(ws.GET("/{alias}").To(d.AliasDatabasesHandler).
 		Doc("Return all database names").
 		Operation("AliasDatabasesHandler").
@@ -71,6 +73,7 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl http://127.0.0.1:8181/docs/local
 	//
+	// 返回指定数据库中的集合
 	ws.Route(ws.GET("/{alias}/{database}").To(d.DatabaseCollectionsHandler).
 		Doc("Return all collections for the database").
 		Operation("DatabaseCollectionsHandler").
@@ -88,7 +91,7 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Content-Type: application/json' \
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "test", "content": "high value content"}'
-	//
+	// POST请求，插入文档
 	ws.Route(ws.POST("/{alias}/{database}/{collection}").To(d.CollectionUpdateHandler).
 		Doc("Store a document to a collection from the database").
 		Operation("CollectionUpdateHandler").
@@ -108,7 +111,7 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Content-Type: application/json' \
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "test", "content": "high value content"}'
-	//
+	// POST请求，指定ID插入文档
 	ws.Route(ws.POST("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionUpdateHandler).
 		Doc("Store a document to a collection from the database").
 		Operation("CollectionUpdateHandler").
@@ -126,7 +129,7 @@ func (d Resource) WebService() *restful.WebService {
 	// curl 'http://127.0.0.1:8181/docs/local/database/new-collection/document-id'  \
 	//   -D - \
 	//   -H 'Accept: application/json'
-	//
+	// GET请求，根据ID查询单个文档
 	ws.Route(ws.GET("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionFindHandler).
 		Doc("Return a document from a collection from the database by its internal " + ParamID).
 		Operation("GetDocument").
@@ -144,7 +147,7 @@ func (d Resource) WebService() *restful.WebService {
 	// curl 'http://127.0.0.1:8181/docs/local/database/new-collection?query={"new": true}'  \
 	//   -D - \
 	//   -H 'Accept: application/json'
-	//
+	// GET请求，查找文档集合。
 	ws.Route(ws.GET("/{alias}/{database}/{collection}").To(d.CollectionFindHandler).
 		Doc("Return documents (max 10 by default) from a collection from the database.").
 		Operation("CollectionFindHandler").
@@ -169,7 +172,7 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Content-Type: application/json' \
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "New title"}'
-	//
+	// PUT请求，根据文档ID，更新文档
 	ws.Route(ws.PUT("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionUpdateHandler).
 		Doc("Updates documents in collection selected by " + ParamID + " parameter").
 		Operation("CollectionUpdateHandler").
@@ -190,7 +193,7 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Content-Type: application/json' \
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "New title"}'
-	//
+	// PUT请求，更新稳定集合
 	ws.Route(ws.PUT("/{alias}/{database}/{collection}").To(d.CollectionUpdateHandler).
 		Doc("Updates documents in collection selected by query parameter").
 		Operation("CollectionUpdateHandler").
@@ -206,7 +209,7 @@ func (d Resource) WebService() *restful.WebService {
 	// Curl example
 	//
 	// 	curl -X DELETE 'http://127.0.0.1:8181/docs/local/database/new-collection/document-id'
-	//
+	// DELETE请求，删除指定文档
 	ws.Route(ws.DELETE("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionRemoveHandler).
 		Doc("Deletes a document from a collection from the database by its internal " + ParamID).
 		Operation("CollectionRemoveHandler").
@@ -221,7 +224,7 @@ func (d Resource) WebService() *restful.WebService {
 	// Curl example
 	//
 	// 	curl -X DELETE 'http://127.0.0.1:8181/docs/local/database/new-collection?query={"new": false}'
-	//
+	// DELETE请求，删除满足条件的文档
 	ws.Route(ws.DELETE("/{alias}/{database}/{collection}").To(d.CollectionRemoveHandler).
 		Doc("Deletes documents from collection if query present, otherwise removes the entire collection.").
 		Operation("CollectionRemoveHandler").

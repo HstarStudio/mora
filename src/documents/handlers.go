@@ -16,6 +16,7 @@ import (
 	"strings"
 )
 
+// 定义结构体
 type Resource struct {
 	SessMng *session.SessionManager
 }
@@ -25,7 +26,7 @@ type Resource struct {
 //
 func (d *Resource) AliasListHandler(req *restful.Request, resp *restful.Response) {
 	// Get aliases from session manager
-	aliases := d.SessMng.GetAliases()
+	aliases := d.SessMng.GetAliases() //通过SessionManager获取配置文件中定义的aliases
 
 	// Write response back to client
 	WriteResponse(aliases, resp)
@@ -36,7 +37,7 @@ func (d *Resource) AliasListHandler(req *restful.Request, resp *restful.Response
 //
 func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Response) {
 	// filter invalids
-	alias := getParam("alias", req)
+	alias := getParam("alias", req) //先拿到alias，也就是配置文件中的服务器信息
 	println(alias)
 	if alias == "" || strings.Index(alias, ".") != -1 {
 		resp.WriteHeader(http.StatusBadRequest)
@@ -44,7 +45,7 @@ func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Res
 	}
 
 	// Mongo session
-	session, needclose, err := d.SessMng.Get(alias)
+	session, needclose, err := d.SessMng.Get(alias) //通过SessionManager拿到指定的alias所对应的session
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -54,7 +55,7 @@ func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Res
 	}
 
 	// Get all databases in mongo
-	names, err := session.DatabaseNames()
+	names, err := session.DatabaseNames() //查询当前服务器的所有Databases
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -69,7 +70,7 @@ func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Res
 //
 func (d *Resource) DatabaseCollectionsHandler(req *restful.Request, resp *restful.Response) {
 	// Mongo session
-	session, needclose, err := d.SessMng.Get(getParam("alias", req))
+	session, needclose, err := d.SessMng.Get(getParam("alias", req)) //先查服务器
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -79,11 +80,11 @@ func (d *Resource) DatabaseCollectionsHandler(req *restful.Request, resp *restfu
 	}
 
 	// Database request parameter
-	dbname := getParam("database", req)
+	dbname := getParam("database", req) //再拿到数据库信息
 	println(dbname)
 
 	// Get collections from database
-	collections, err := session.DB(dbname).CollectionNames()
+	collections, err := session.DB(dbname).CollectionNames() //拿到数据库下所有的集合
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -113,7 +114,7 @@ func (d *Resource) CollectionUpdateHandler(req *restful.Request, resp *restful.R
 	// UseNumber() which turns all numbers into strings. See:
 	// https://github.com/emicklei/mora/pull/31
 	decoder := json.NewDecoder(req.Request.Body)
-	err := decoder.Decode(&document)
+	err := decoder.Decode(&document) //将body赋值给document
 	if err != nil {
 		WriteStatusError(http.StatusBadRequest, err, resp)
 		return
@@ -149,11 +150,12 @@ func (d *Resource) CollectionUpdateHandler(req *restful.Request, resp *restful.R
 	//isStrict := getParam("strict", req)
 
 	// Insert if request method is POST or no selector otherwise update
-	if req.Request.Method == "POST" {
+	if req.Request.Method == "POST" { //如果是PUT请求，那么则新增
 		d.handleInsert(col, selector, document, req, resp)
 		return
 	}
 
+	//否则，就更新
 	d.handleUpdate(col, one, selector, document, req, resp)
 }
 
