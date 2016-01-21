@@ -15,7 +15,7 @@ cp mora.properties target
 
 # fetch or update Swagger UI
 if [ ! -d ./target/swagger-ui ]; then
-  git clone https://github.com/wordnik/swagger-ui.git ./target/swagger-ui
+	git clone https://github.com/wordnik/swagger-ui.git ./target/swagger-ui
 fi
 
 # apply customizations to Swagger UI
@@ -26,8 +26,8 @@ sed "s/89bf04/89bfAA/" ./target/swagger-ui/dist/css/screen.css > ./target/swagge
 
 ARCHIVE="mora-"`date +"%Y%m%d"`".zip"
 cd target
-  rm -f *.zip
-  zip $ARCHIVE mora
-  zip $ARCHIVE mora.properties
-  zip -r $ARCHIVE ./swagger-ui/dist
-  cd ..
+	rm -f *.zip
+	zip $ARCHIVE mora
+	zip $ARCHIVE mora.properties
+	zip -r $ARCHIVE ./swagger-ui/dist
+	cd ..
